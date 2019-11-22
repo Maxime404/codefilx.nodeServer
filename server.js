@@ -91,7 +91,7 @@ const server = http.createServer(function (req, res) {
     if (req.method === 'DELETE') {
         if (pathname.includes('/students')) {
             if (pathname === '/students') {
-                json = '';
+                json = [];
                 fs.writeFileSync(LOCAL_DATABASE, JSON.stringify(json, null, 4))
             } else if (pathname.includes('/students')) {
                 const studentId = parseInt(pathname.slice(pathname.lastIndexOf('/') + 1));
@@ -101,7 +101,7 @@ const server = http.createServer(function (req, res) {
                     const newJson = [];
 
                     json.forEach(jsonPerLine => {
-                        if (!jsonPerLine['id'] === studentId) {
+                        if (jsonPerLine['id'] !== studentId) {
                             newJson.push(jsonPerLine);
                         }
                     });
