@@ -1,7 +1,22 @@
 [
     {
-        "name": "Jean",
-        "school": "Efrei",
+        "name": "Samy",
+        "school": null,
         "id": 2
+    },
+    {
+        "name": "Leo",
+        "school": "Isart",
+        "id": 3
+    },
+    {
+        "name": "Seb",
+        "school": null,
+        "id": 4
+    },
+    {
+        "name": "Max",
+        "school": "Efrei",
+        "id": 5
     }
 ]

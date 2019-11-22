@@ -35,7 +35,7 @@ const server = http.createServer(function (req, res) {
     }
 
     if (req.method === 'POST') {
-        if (pathname === '/students') {
+        if (pathname.match(/^\/students\/?/)) {
             let body = '';
 
             req.on('data', chunk => {
@@ -53,7 +53,11 @@ const server = http.createServer(function (req, res) {
                     data = [user];
                 } else {
                     const json = require(`./${LOCAL_DATABASE}`);
-                    user.id = json.length + 1;
+                    let users_id = [];
+                    json.forEach(user => {
+                        users_id.push(user.id);
+                    });
+                    user.id = json.length > 0 ? Math.max.apply(null, users_id) + 1 : 1;
                     json.push(user);
                     data = json;
                 }
@@ -63,9 +67,9 @@ const server = http.createServer(function (req, res) {
         }
     }
 
-    if (req.method === 'PUT') {
-        if (pathname.includes('/students')) {
-            const studentId = parseInt(pathname.slice(pathname.lastIndexOf('/') + 1));
+    if (req.method === 'PUT' && fs.existsSync(LOCAL_DATABASE)) {
+        if (pathname.match(/^\/students\/?[0-9]+/)) {
+            const user_id = parseInt(pathname.slice(pathname.lastIndexOf('/') + 1));
             let body = '';
 
             req.on('data', chunk => {
@@ -75,11 +79,11 @@ const server = http.createServer(function (req, res) {
 
             req.on('end', () => {
                 //console.log(req.headers);
-                const student = JSON.parse(body);
+                const user = JSON.parse(body);
                 const json = require(`./${LOCAL_DATABASE}`);
                 json.forEach(jsonPerLine => {
-                    if (jsonPerLine['id'] === studentId) {
-                        Object.assign(jsonPerLine, student);
+                    if (jsonPerLine.id === user_id) {
+                        Object.assign(jsonPerLine, user);
                     }
                 });
 
@@ -88,12 +92,12 @@ const server = http.createServer(function (req, res) {
         }
     }
 
-    if (req.method === 'DELETE') {
-        if (pathname.includes('/students')) {
+    if (req.method === 'DELETE' && fs.existsSync(LOCAL_DATABASE)) {
+        if (pathname.match(/^\/students\/?/)) {
             if (pathname === '/students') {
                 json = [];
                 fs.writeFileSync(LOCAL_DATABASE, JSON.stringify(json, null, 4))
-            } else if (pathname.includes('/students')) {
+            } else if (pathname.match(/^\/students\/?[0-9]+/)) {
                 const studentId = parseInt(pathname.slice(pathname.lastIndexOf('/') + 1));
 
                 req.on('end', () => {
